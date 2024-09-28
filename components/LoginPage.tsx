@@ -7,7 +7,7 @@ import { useEffect } from "react";
 const { Title } = Typography;
 
 export default function LoginPage() {
-  const { data, status } = useSession();
+  const { status } = useSession();
   useEffect(() => {
     if (status === AUTH_STATUS.AUTH) {
       console.log("logged in successfully, time to save in DB");
