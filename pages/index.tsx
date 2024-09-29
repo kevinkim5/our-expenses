@@ -2,12 +2,19 @@ import LoginPage from "@/components/LoginPage";
 import { AUTH_STATUS } from "@/constants/common";
 import { Typography } from "antd";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 const { Title } = Typography;
 
 export default function IndexPage() {
+  const router = useRouter();
   const { data, status } = useSession();
-  console.log(data)
+
+  useEffect(() => {
+    if (status === AUTH_STATUS.AUTH) router.push("transactions");
+  }, [status]);
+
   return (
     <>
       <Title>Expenses Tracker</Title>
@@ -16,8 +23,11 @@ export default function IndexPage() {
       ) : status === AUTH_STATUS.AUTH ? (
         <div>
           <h1> Hi {data?.user?.name}</h1>
-          <img src={data?.user?.image} alt={data?.user?.name + " photo"} />
-          <button onClick={signOut}>sign out</button>
+          <img
+            src={data?.user?.image || ""}
+            alt={data?.user?.name + " photo"}
+          />
+          <button onClick={() => signOut}>sign out</button>
         </div>
       ) : (
         <LoginPage />
