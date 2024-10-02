@@ -5,6 +5,10 @@ const baseAPI = axios.create({
   withCredentials: true,
 });
 
+type SaveObj = {
+  [key: string]: string;
+};
+
 export const getAPICall = async (url: string) => {
   try {
     const res = await baseAPI.get(url);
@@ -17,7 +21,7 @@ export const getAPICall = async (url: string) => {
   }
 };
 
-export const postAPICall = async (url: string, dataObj: any) => {
+export const postAPICall = async (url: string, dataObj: SaveObj) => {
   try {
     const formData = new FormData();
     Object.keys(dataObj).forEach((key) => {
