@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   DatePicker,
@@ -9,11 +9,12 @@ import {
   Radio,
   Layout,
   message,
-} from "antd";
-import dayjs from "dayjs";
-import { postAPICall } from "@/lib/apiManager";
-import { FORM_TYPES, PEOPLE } from "@/constants/common";
-import LoadingOverlay from "@/components/LoadingOverlay";
+  RadioChangeEvent,
+} from 'antd';
+import dayjs from 'dayjs';
+import { postAPICall } from '@/lib/apiManager';
+import { FORM_TYPES, PEOPLE } from '@/constants/common';
+import LoadingOverlay from '@/components/LoadingOverlay';
 
 const formItemLayout = {
   labelCol: {
@@ -37,55 +38,55 @@ export default function AddTransactionForm() {
     console.log(form.getFieldsValue());
   };
 
-  const handleRadioChange = (e) => {
+  const handleRadioChange = (e: RadioChangeEvent) => {
     setFormType(e.target.value);
     form.resetFields();
-    form.setFieldValue("Date", dayjs());
+    form.setFieldValue('Date', dayjs());
   };
 
   const handleSubmit = async () => {
     console.log(form.getFieldsValue());
     // console.log(form.getFieldValue("Date").format("YYYY-MM-DDTHH:mm:ss.SSSZ"));
     // const amount = form.getFieldValue("Amount");
-    const paidBy = form.getFieldValue("PaidBy");
+    const paidBy = form.getFieldValue('PaidBy');
 
     const submitParams = {
       type: formType,
       ...form.getFieldsValue(),
-      Date: form.getFieldValue("Date").format("YYYY-MM-DDTHH:mm:ss.SSSZ"),
+      Date: form.getFieldValue('Date').format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
     };
     if (formType === FORM_TYPES.SETTLE) {
-      submitParams["Description"] = "Settle";
-      submitParams["Settle"] = true;
+      submitParams['Description'] = 'Settle';
+      submitParams['Settle'] = true;
     } else if (formType === FORM_TYPES.EXPENSE) {
     }
     if (paidBy === PEOPLE.JAC) {
-      submitParams["Amount"] *= -1;
+      submitParams['Amount'] *= -1;
     }
 
-    const res = await postAPICall("add", submitParams);
+    const res = await postAPICall('add', submitParams);
     console.log(res);
     console.log(res.status === 200);
     if (res.status === 200) {
       message.success({
         style: { top: 64 },
-        content: "Added Successfully!",
+        content: 'Added Successfully!',
       });
     } else {
       message.error({
-        content: "Failed to add, please try again!",
+        content: 'Failed to add, please try again!',
       });
     }
   };
 
   useEffect(() => {
-    form.setFieldValue("Date", dayjs());
+    form.setFieldValue('Date', dayjs());
     form.setFieldValue(
-      "PaidBy",
+      'PaidBy',
       formType === FORM_TYPES.EXPENSE ? PEOPLE.KEV : PEOPLE.JAC
     );
     if (formType === FORM_TYPES.SETTLE) {
-      form.setFieldValue("Description", "Settle");
+      form.setFieldValue('Description', 'Settle');
     }
   }, [formType]);
 
@@ -109,7 +110,7 @@ export default function AddTransactionForm() {
       <Form
         form={form}
         onValuesChange={handleChange}
-        variant={"outlined"}
+        variant={'outlined'}
         layout="horizontal"
         {...formItemLayout}
       >
@@ -118,7 +119,7 @@ export default function AddTransactionForm() {
           label="Date"
           name="Date"
           labelAlign="left"
-          rules={[{ required: true, message: "Please input!" }]}
+          rules={[{ required: true, message: 'Please input!' }]}
         >
           <DatePicker format="DD MMM YYYY" />
         </Form.Item>
@@ -126,7 +127,7 @@ export default function AddTransactionForm() {
           <Form.Item
             label="Description"
             name="Description"
-            rules={[{ required: true, message: "Please input!" }]}
+            rules={[{ required: true, message: 'Please input!' }]}
           >
             <Input />
           </Form.Item>
@@ -134,7 +135,7 @@ export default function AddTransactionForm() {
         <Form.Item
           label="Amount"
           name="Amount"
-          rules={[{ required: true, message: "Please input!" }]}
+          rules={[{ required: true, message: 'Please input!' }]}
         >
           <InputNumber<number> prefix="$" />
         </Form.Item>
