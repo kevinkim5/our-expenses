@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { getAPICall } from "@/lib/apiManager";
 import { Row, Statistic, Table, Typography } from "antd";
-import type { TableColumnsType, TableProps } from "antd";
+import type { TableColumnsType } from "antd";
 
 interface DataType {
   key: React.Key;
@@ -78,7 +78,7 @@ export default function TransactionsPage() {
       key: "Claim",
       title: "Claim",
       dataIndex: "Claim",
-      render: (v: any) => {
+      render: (v: boolean) => {
         return v === true ? "Yes" : "";
       },
       filters: [
@@ -93,7 +93,7 @@ export default function TransactionsPage() {
       key: "Settle",
       title: "Settle",
       dataIndex: "Settle",
-      render: (v: any) => {
+      render: (v: boolean) => {
         return v === true ? "Yes" : "";
       },
     },
