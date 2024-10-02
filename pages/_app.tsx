@@ -2,7 +2,7 @@ import { ConfigProvider, Layout } from "antd";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 
-import theme from "./theme/themeConfig";
+import theme from "../theme/themeConfig";
 import NavBar from "@/components/NavBar";
 
 const contentStyle = {
