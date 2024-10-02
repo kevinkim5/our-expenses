@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import dayjs from "dayjs";
-import { getAPICall } from "@/lib/apiManager";
-import { Row, Statistic, Table, Typography } from "antd";
-import type { TableColumnsType } from "antd";
+import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
+import { getAPICall } from '@/lib/apiManager';
+import { Row, Statistic, Table, Typography } from 'antd';
+import type { TableColumnsType } from 'antd';
 
 interface DataType {
   key: React.Key;
@@ -18,7 +18,7 @@ export default function TransactionsPage() {
   const [transactions, setTransactions] = useState([]);
 
   const fetchData = async () => {
-    const res = await getAPICall("transactions");
+    const res = await getAPICall('transactions');
     const { data } = res;
     console.log(data);
     if (data && data.length) {
@@ -42,11 +42,11 @@ export default function TransactionsPage() {
   const getAmountDisplay = (amount: number) => {
     const commonProps = {
       precision: 2,
-      prefix: "$",
+      prefix: '$',
       value: amount,
       valueStyle: {
-        fontSize: "16px",
-        color: amount < 0 ? "#cf1322" : "auto",
+        fontSize: '16px',
+        color: amount < 0 ? '#cf1322' : 'auto',
       },
     };
     return <Statistic {...commonProps} />;
@@ -54,47 +54,47 @@ export default function TransactionsPage() {
 
   const cols: TableColumnsType<DataType> = [
     {
-      key: "Date",
-      title: "Date",
-      dataIndex: "Date",
+      key: 'Date',
+      title: 'Date',
+      dataIndex: 'Date',
       render: (v: string) => {
-        return dayjs(v, "YYYY-MM-DDTHH:mm:ss.SSSZ").format("DD MMM YYYY");
+        return dayjs(v, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('DD MMM YYYY');
       },
       sorter: (a, b) => a.Date - b.Date,
     },
     {
-      key: "Description",
-      title: "Description",
-      dataIndex: "Description",
+      key: 'Description',
+      title: 'Description',
+      dataIndex: 'Description',
     },
     {
-      key: "Amount",
-      title: "Amount",
-      dataIndex: "Amount",
+      key: 'Amount',
+      title: 'Amount',
+      dataIndex: 'Amount',
       width: 120,
-      render: (v: string) => getAmountDisplay(v),
+      render: (v: number) => getAmountDisplay(v),
     },
     {
-      key: "Claim",
-      title: "Claim",
-      dataIndex: "Claim",
+      key: 'Claim',
+      title: 'Claim',
+      dataIndex: 'Claim',
       render: (v: boolean) => {
-        return v === true ? "Yes" : "";
+        return v === true ? 'Yes' : '';
       },
       filters: [
         {
-          text: "Yes",
+          text: 'Yes',
           value: true,
         },
       ],
       onFilter: (value, record) => record.Claim === value,
     },
     {
-      key: "Settle",
-      title: "Settle",
-      dataIndex: "Settle",
+      key: 'Settle',
+      title: 'Settle',
+      dataIndex: 'Settle',
       render: (v: boolean) => {
-        return v === true ? "Yes" : "";
+        return v === true ? 'Yes' : '';
       },
     },
   ];
@@ -108,7 +108,7 @@ export default function TransactionsPage() {
       <Table
         columns={cols}
         dataSource={transactions}
-        scroll={{ x: 500, y: "60vh" }}
+        scroll={{ x: 500, y: '60vh' }}
         pagination={false}
       />
     </>
