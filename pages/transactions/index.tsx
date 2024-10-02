@@ -9,7 +9,7 @@ interface DataType {
   Date: number;
   Description: number;
   Amount: string;
-  Claim: Boolean;
+  Claim: boolean;
   // Settle: Boolean;
 }
 
