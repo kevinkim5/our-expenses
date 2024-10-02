@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-  AppstoreOutlined,
-  MailOutlined,
-  ProfileOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { ProfileOutlined, PlusOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Row } from "antd";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -39,8 +33,8 @@ const headerStyle: React.CSSProperties = {
 export default function NavBar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { status } = useSession();
-  const [current, setCurrent] = useState(pathname || "");
+  // const { status } = useSession();
+  const [current, setCurrent] = useState<string>(pathname || "");
   console.log(pathname);
 
   const onClick: MenuProps["onClick"] = (e) => {
@@ -50,7 +44,7 @@ export default function NavBar() {
   };
 
   useEffect(() => {
-    setCurrent(pathname);
+    setCurrent(pathname || "");
   }, [pathname]);
 
   return (

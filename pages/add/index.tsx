@@ -1,27 +1,19 @@
 import React, { useEffect, useState } from "react";
 import {
   Button,
-  Cascader,
   DatePicker,
   Form,
   Input,
   InputNumber,
-  Mentions,
-  Select,
-  TreeSelect,
-  Segmented,
   Switch,
   Radio,
   Layout,
   message,
 } from "antd";
-import type { FormProps } from "antd";
 import dayjs from "dayjs";
 import { postAPICall } from "@/lib/apiManager";
 import { FORM_TYPES, PEOPLE } from "@/constants/common";
 import LoadingOverlay from "@/components/LoadingOverlay";
-
-const { RangePicker } = DatePicker;
 
 const formItemLayout = {
   labelCol: {
@@ -34,15 +26,14 @@ const formItemLayout = {
   },
 };
 
-export default function AddTransactionForm(props) {
+export default function AddTransactionForm() {
   const [formType, setFormType] = useState(FORM_TYPES.EXPENSE);
   const [submittable, setSubmittable] = useState<boolean>(false);
 
   const [form] = Form.useForm();
   const values = Form.useWatch([], form);
-  const [messageApi, contextHolder] = message.useMessage();
 
-  const handleChange = (e) => {
+  const handleChange = () => {
     console.log(form.getFieldsValue());
   };
 
@@ -52,12 +43,11 @@ export default function AddTransactionForm(props) {
     form.setFieldValue("Date", dayjs());
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async () => {
     console.log(form.getFieldsValue());
     // console.log(form.getFieldValue("Date").format("YYYY-MM-DDTHH:mm:ss.SSSZ"));
     // const amount = form.getFieldValue("Amount");
     const paidBy = form.getFieldValue("PaidBy");
-    console.log(paidBy);
 
     const submitParams = {
       type: formType,

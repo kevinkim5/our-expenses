@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "../../../lib/mongoDB";
-import { FORM_TYPES } from "@/constants/common";
 
 interface SaveObj {
   Date?: Date;

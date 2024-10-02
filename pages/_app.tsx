@@ -5,15 +5,6 @@ import type { AppProps } from "next/app";
 import theme from "./theme/themeConfig";
 import NavBar from "@/components/NavBar";
 
-const headerStyle: React.CSSProperties = {
-  textAlign: "center",
-  color: "#fff",
-  height: 64,
-  paddingInline: 48,
-  lineHeight: "64px",
-  backgroundColor: "#4096ff",
-};
-
 const contentStyle = {
   borderRadius: 8,
   overflow: "hidden",
@@ -29,7 +20,7 @@ const footerStyle: React.CSSProperties = {
   backgroundColor: "#001529",
 };
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Header, Footer, Content } = Layout;
 
 const App = ({ Component, pageProps }: AppProps) => (
   <ConfigProvider theme={theme}>
