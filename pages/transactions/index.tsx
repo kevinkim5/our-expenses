@@ -9,7 +9,7 @@ interface DataType {
   Date: number;
   Description: number;
   Amount: string;
-  Claim: Boolean;
+  Claim: boolean;
   // Settle: Boolean;
 }
 
@@ -72,7 +72,7 @@ export default function TransactionsPage() {
       title: "Amount",
       dataIndex: "Amount",
       width: 120,
-      render: (v: string) => getAmountDisplay(v),
+      render: (v: string) => getAmountDisplay(parseFloat(v)),
     },
     {
       key: "Claim",
