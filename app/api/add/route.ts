@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     //   Date: formData.get("Date"),
     // };
     const formData = await req.formData();
-    const type = formData.get("type");
+    // const type = formData.get("type");
     const fields = ["Date", "Description", "Amount"];
     const booleanFields = ["Claim", "Settle"];
     const saveObj: SaveObj = {};

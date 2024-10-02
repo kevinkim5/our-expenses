@@ -3,7 +3,7 @@ import { ProfileOutlined, PlusOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Menu, Row } from "antd";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 
 type MenuItem = Required<MenuProps>["items"][number];
