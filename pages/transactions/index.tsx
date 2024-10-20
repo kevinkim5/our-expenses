@@ -1,43 +1,47 @@
-import { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
-import { getAPICall } from '@/lib/apiManager';
-import { Row, Statistic, Table, Typography } from 'antd';
-import type { TableColumnsType } from 'antd';
+import { useEffect, useState } from 'react'
+import type { TableColumnsType } from 'antd'
+import { DatePicker, Row, Statistic, Table, Typography } from 'antd'
+
+import Loader from '@/components/Loader'
+import { getAPICall } from '@/lib/apiManager'
+import { convertDateStrToDayjs } from '@/utils/helpers'
+
+const { RangePicker } = DatePicker
 
 interface DataType {
-  key: React.Key;
-  Date: number;
-  Description: number;
-  Amount: string;
-  Claim: boolean;
-  // Settle: Boolean;
+  key: React.Key
+  Date: string
+  Description: number
+  Amount: string
+  Claim: boolean
+  Settle: boolean
 }
 
 export default function TransactionsPage() {
-  const [outstanding, setOutstanding] = useState(0);
-  const [transactions, setTransactions] = useState([]);
+  const [dateLastSettled, setDateLastSettled] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(true)
+  const [outstanding, setOutstanding] = useState(0)
+  const [transactions, setTransactions] = useState([])
 
   const fetchData = async () => {
-    const res = await getAPICall('transactions');
-    const { data } = res;
-    console.log(data);
+    const res = await getAPICall('transactions')
+    const { data } = res
+    console.log(data)
     if (data && data.length) {
-      setTransactions(data);
-      const unsettledAmt = data.reduce(
-        (acc: number, obj: { Amount: string }) => {
-          return (acc += parseFloat(obj.Amount));
-        },
-        0
-      );
-      console.log(unsettledAmt);
-      setOutstanding(unsettledAmt);
+      setTransactions(data)
+      const unsettledAmt = data.reduce((acc: number, obj: DataType) => {
+        if (obj.Settle && dateLastSettled === null) setDateLastSettled(obj.Date)
+        return (acc += parseFloat(obj.Amount))
+      }, 0)
+      console.log(unsettledAmt)
+      setOutstanding(unsettledAmt)
     }
-    // setLoading(false);
-  };
+    setLoading(false)
+  }
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const getAmountDisplay = (amount: number) => {
     const commonProps = {
@@ -48,9 +52,9 @@ export default function TransactionsPage() {
         fontSize: '16px',
         color: amount < 0 ? '#cf1322' : 'auto',
       },
-    };
-    return <Statistic {...commonProps} />;
-  };
+    }
+    return <Statistic {...commonProps} />
+  }
 
   const cols: TableColumnsType<DataType> = [
     {
@@ -58,9 +62,11 @@ export default function TransactionsPage() {
       title: 'Date',
       dataIndex: 'Date',
       render: (v: string) => {
-        return dayjs(v, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('DD MMM YYYY');
+        return convertDateStrToDayjs(v).format('DD MMM YYYY')
       },
-      sorter: (a, b) => a.Date - b.Date,
+      sorter: (a, b) =>
+        convertDateStrToDayjs(a.Date).unix() -
+        convertDateStrToDayjs(b.Date).unix(),
     },
     {
       key: 'Description',
@@ -79,7 +85,7 @@ export default function TransactionsPage() {
       title: 'Claim',
       dataIndex: 'Claim',
       render: (v: boolean) => {
-        return v === true ? 'Yes' : '';
+        return v === true ? 'Yes' : ''
       },
       filters: [
         {
@@ -94,23 +100,28 @@ export default function TransactionsPage() {
       title: 'Settle',
       dataIndex: 'Settle',
       render: (v: boolean) => {
-        return v === true ? 'Yes' : '';
+        return v === true ? 'Yes' : ''
       },
     },
-  ];
+  ]
 
   return (
-    <>
+    <Loader loading={loading}>
       <Row style={{ gap: 8 }}>
         <Typography>Current Oustanding:</Typography>
         {getAmountDisplay(outstanding)}
       </Row>
+      <Row style={{ gap: 8 }}>
+        <Typography>Date Last Settled:</Typography>
+        {dateLastSettled}
+      </Row>
+      <RangePicker format="YYYY-MM-DD" />
       <Table
         columns={cols}
         dataSource={transactions}
         scroll={{ x: 500, y: '60vh' }}
         pagination={false}
       />
-    </>
-  );
+    </Loader>
+  )
 }

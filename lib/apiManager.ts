@@ -8,7 +8,7 @@ const baseAPI = axios.create({
 type SaveObj = {
   [key: string]: string;
 };
-
+  
 export const getAPICall = async (url: string) => {
   try {
     const res = await baseAPI.get(url);
