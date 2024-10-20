@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import clientPromise from '../../../lib/mongoDB'
+import clientPromise from '@/lib/mongoDB'
 
 interface SaveObj {
   [key: string]: Date | boolean | number | string | null
