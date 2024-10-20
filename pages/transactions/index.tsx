@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
 import type { TableColumnsType } from 'antd'
 import { DatePicker, Row, Statistic, Table, Typography } from 'antd'
-import dayjs from 'dayjs'
 
 import Loader from '@/components/Loader'
 import { getAPICall } from '@/lib/apiManager'
+import { convertDateStrToDayjs } from '@/utils/helpers'
 
 const { RangePicker } = DatePicker
 
 interface DataType {
   key: React.Key
-  Date: number | string
+  Date: string
   Description: number
   Amount: string
   Claim: boolean
@@ -18,7 +18,7 @@ interface DataType {
 }
 
 export default function TransactionsPage() {
-  const [dateLastSettled, setDateLastSettled] = useState(null)
+  const [dateLastSettled, setDateLastSettled] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(true)
   const [outstanding, setOutstanding] = useState(0)
   const [transactions, setTransactions] = useState([])
@@ -62,9 +62,11 @@ export default function TransactionsPage() {
       title: 'Date',
       dataIndex: 'Date',
       render: (v: string) => {
-        return dayjs(v, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('DD MMM YYYY')
+        return convertDateStrToDayjs(v).format('DD MMM YYYY')
       },
-      sorter: (a, b) => a.Date - b.Date,
+      sorter: (a, b) =>
+        convertDateStrToDayjs(a.Date).unix() -
+        convertDateStrToDayjs(b.Date).unix(),
     },
     {
       key: 'Description',
