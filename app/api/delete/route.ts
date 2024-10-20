@@ -11,7 +11,7 @@ export async function DELETE(req: NextRequest) {
     const id = req.nextUrl.searchParams.get('id')
     if (!id) throw new Error('Missing id')
 
-    const res = await db.collection('transactions').updateOne(
+    await db.collection('transactions').updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {

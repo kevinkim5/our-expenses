@@ -53,7 +53,7 @@ export default function TransactionsPage() {
   const onDelete = async (record: Partial<DataType>) => {
     try {
       setLoading(true)
-      const res = await deleteAPICall(`delete?id=${record._id}`)
+      await deleteAPICall(`delete?id=${record._id}`)
       message.success({ content: 'Deleted successfully!' })
       fetchData()
     } catch (err) {
@@ -130,7 +130,7 @@ export default function TransactionsPage() {
     {
       title: '',
       dataIndex: 'Delete',
-      render: (_: any, record: DataType) => {
+      render: (text: string, record: DataType) => {
         return (
           <Popconfirm
             title="Confirm Delete?"
