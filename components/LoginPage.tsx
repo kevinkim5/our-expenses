@@ -1,8 +1,9 @@
-import { AUTH_STATUS } from "@/constants/common";
+import { useEffect } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { GoogleOutlined } from "@ant-design/icons";
 import { Button, Typography } from "antd";
-import { signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
+
+import { AUTH_STATUS } from "@/constants/common";
 
 const { Title } = Typography;
 

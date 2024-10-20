@@ -1,19 +1,20 @@
-import LoginPage from "@/components/LoginPage";
-import { AUTH_STATUS } from "@/constants/common";
-import { Typography } from "antd";
-import { useSession, signOut } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect } from 'react'
+// import { useRouter } from 'next/router'
+import { signOut, useSession } from 'next-auth/react'
+import { Typography } from 'antd'
 
-const { Title } = Typography;
+import LoginPage from '@/components/LoginPage'
+import { AUTH_STATUS } from '@/constants/common'
+
+const { Title } = Typography
 
 export default function IndexPage() {
-  const router = useRouter();
-  const { data, status } = useSession();
+  // const router = useRouter()
+  const { data, status } = useSession()
 
   useEffect(() => {
-    if (status === AUTH_STATUS.AUTH) router.push("transactions");
-  }, [status]);
+    // if (status === AUTH_STATUS.AUTH) router.push('transactions')
+  }, [status])
 
   return (
     <>
@@ -24,14 +25,14 @@ export default function IndexPage() {
         <div>
           <h1> Hi {data?.user?.name}</h1>
           <img
-            src={data?.user?.image || ""}
-            alt={data?.user?.name + " photo"}
+            src={data?.user?.image || ''}
+            alt={data?.user?.name + ' photo'}
           />
-          <button onClick={() => signOut}>sign out</button>
+          <button onClick={() => signOut()}>sign out</button>
         </div>
       ) : (
         <LoginPage />
       )}
     </>
-  );
+  )
 }

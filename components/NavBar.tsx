@@ -1,51 +1,56 @@
-import React, { useEffect, useState } from "react";
-import { ProfileOutlined, PlusOutlined } from "@ant-design/icons";
-import type { MenuProps } from "antd";
-import { Menu, Row } from "antd";
-import { useRouter } from "next/router";
+import React, { useEffect, useState } from 'react'
 // import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/router'
+import { HomeOutlined,PlusOutlined, ProfileOutlined } from '@ant-design/icons'
+import type { MenuProps } from 'antd'
+import { Menu, Row } from 'antd'
 
-type MenuItem = Required<MenuProps>["items"][number];
+type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [
   {
-    label: "View",
-    key: "/transactions",
+    label: '',
+    key: '/',
+    icon: <HomeOutlined />,
+  },
+  {
+    label: 'View',
+    key: '/transactions',
     icon: <ProfileOutlined />,
   },
   {
-    label: "Add",
-    key: "/add",
+    label: 'Add',
+    key: '/add',
     icon: <PlusOutlined />,
   },
-];
+]
 
 const headerStyle: React.CSSProperties = {
-  textAlign: "center",
-  color: "#fff",
+  textAlign: 'center',
+  color: '#fff',
   height: 64,
   // paddingInline: 48,
-  lineHeight: "64px",
-  backgroundColor: "#4096ff",
-};
+  lineHeight: '64px',
+  backgroundColor: '#4096ff',
+}
 
 export default function NavBar() {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname = usePathname()
+  const router = useRouter()
   // const { status } = useSession();
-  const [current, setCurrent] = useState<string>(pathname || "");
-  console.log(pathname);
+  const [current, setCurrent] = useState<string>(pathname || '')
+  console.log(pathname)
 
-  const onClick: MenuProps["onClick"] = (e) => {
-    console.log("click ", e);
-    router.push(e.key);
-    setCurrent(e.key);
-  };
+  const onClick: MenuProps['onClick'] = (e) => {
+    console.log('click ', e)
+    router.push(e.key)
+    setCurrent(e.key)
+  }
 
   useEffect(() => {
-    setCurrent(pathname || "");
-  }, [pathname]);
+    setCurrent(pathname || '')
+  }, [pathname])
 
   return (
     <Row style={headerStyle}>
@@ -59,5 +64,5 @@ export default function NavBar() {
         selectedKeys={[current]}
       />
     </Row>
-  );
+  )
 }

@@ -1,7 +1,7 @@
+import { PropsWithChildren } from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Spin } from 'antd'
 import { createStyles } from 'antd-style'
-import { PropsWithChildren } from 'react'
 
 const useStyles = createStyles(() => {
   return {
