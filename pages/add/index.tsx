@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react'
 import {
   Button,
   DatePicker,
@@ -11,7 +12,6 @@ import {
   Switch,
 } from 'antd'
 import dayjs from 'dayjs'
-import React, { useEffect, useState } from 'react'
 
 import Loader from '@/components/Loader'
 import { FORM_TYPES, PEOPLE } from '@/constants/common'
