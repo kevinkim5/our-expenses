@@ -1,15 +1,26 @@
 import { useEffect, useState } from 'react'
+import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import type { TableColumnsType } from 'antd'
-import { DatePicker, Row, Statistic, Table, Typography } from 'antd'
+import {
+  Button,
+  DatePicker,
+  message,
+  Popconfirm,
+  Row,
+  Statistic,
+  Table,
+  Typography,
+} from 'antd'
 
 import Loader from '@/components/Loader'
-import { getAPICall } from '@/lib/apiManager'
+import { deleteAPICall, getAPICall } from '@/lib/apiManager'
 import { convertDateStrToDayjs } from '@/utils/helpers'
 
 const { RangePicker } = DatePicker
 
 interface DataType {
   key: React.Key
+  _id: string
   Date: string
   Description: number
   Amount: string
@@ -37,6 +48,19 @@ export default function TransactionsPage() {
       setOutstanding(unsettledAmt)
     }
     setLoading(false)
+  }
+
+  const onDelete = async (record: Partial<DataType>) => {
+    try {
+      setLoading(true)
+      await deleteAPICall(`delete?id=${record._id}`)
+      message.success({ content: 'Deleted successfully!' })
+      fetchData()
+    } catch (err) {
+      console.error(err)
+      setLoading(false)
+      message.error({ content: 'Failed to delete, please try again!' })
+    }
   }
 
   useEffect(() => {
@@ -101,6 +125,24 @@ export default function TransactionsPage() {
       dataIndex: 'Settle',
       render: (v: boolean) => {
         return v === true ? 'Yes' : ''
+      },
+    },
+    {
+      title: '',
+      dataIndex: 'Delete',
+      render: (text: string, record: DataType) => {
+        return (
+          <Popconfirm
+            title="Confirm Delete?"
+            okText="Yes"
+            okButtonProps={{ danger: true }}
+            cancelText="No"
+            onConfirm={() => onDelete(record)}
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+          >
+            <Button icon={<DeleteOutlined />} danger type="link" />
+          </Popconfirm>
+        )
       },
     },
   ]
