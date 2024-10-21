@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { BOOLEAN_KEYS } from '@/constants/common'
 import clientPromise from '@/lib/mongoDB'
 
 interface SaveObj {
@@ -14,13 +15,12 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData()
 
     const fields = ['Date', 'Description', 'Amount']
-    const booleanFields = ['Claim', 'Settle']
     const saveObj: SaveObj = {}
     fields.forEach((field) => {
       saveObj[field] = (formData.get(field) as string) || null
     })
 
-    booleanFields.forEach((field) => {
+    BOOLEAN_KEYS.forEach((field) => {
       if (formData.has(field) && formData.get(field) != undefined)
         saveObj[field] = JSON.parse(formData.get(field) as string) || null
     })

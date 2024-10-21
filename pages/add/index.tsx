@@ -11,10 +11,10 @@ import {
   RadioChangeEvent,
   Switch,
 } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 
 import Loader from '@/components/Loader'
-import { FORM_TYPES, PEOPLE } from '@/constants/common'
+import { DAYJS_TO_STR_Z_FORMAT, FORM_TYPES, PEOPLE } from '@/constants/common'
 import { postAPICall } from '@/lib/apiManager'
 
 const formItemLayout = {
@@ -28,7 +28,26 @@ const formItemLayout = {
   },
 }
 
-export default function AddTransactionForm() {
+interface Record {
+  _id: string
+  Date: string
+  Description: number
+  Amount: string
+  Claim: boolean
+  Settle: boolean
+}
+
+interface AddTransactionFormProps {
+  onCancel?: () => void
+  onSave?: (record: Partial<Record> & { Date: Dayjs }) => void
+  record?: Record
+}
+
+export default function AddTransactionForm(props: AddTransactionFormProps) {
+  const { onCancel, onSave, record } = props
+
+  console.log(record?.Settle)
+
   const [formType, setFormType] = useState(FORM_TYPES.EXPENSE)
   const [loading, setLoading] = useState<boolean>(false)
   const [submittable, setSubmittable] = useState<boolean>(false)
@@ -99,6 +118,27 @@ export default function AddTransactionForm() {
       .catch(() => setSubmittable(false))
   }, [form, values])
 
+  useEffect(() => {
+    if (record) {
+      let amount = parseFloat(record?.Amount) || 0
+
+      if (record?.Settle) {
+        setFormType(FORM_TYPES.SETTLE)
+        amount *= -1
+      } else {
+        setFormType(FORM_TYPES.EXPENSE)
+      }
+
+      form.setFieldsValue({
+        Amount: amount,
+        Claim: record?.Claim,
+        Date: dayjs(record?.Date, DAYJS_TO_STR_Z_FORMAT),
+        Description: record?.Description,
+        PaidBy: parseFloat(record?.Amount) < 0 ? 'Jac' : 'Kev',
+      })
+    }
+  }, [record])
+
   return (
     <Loader loading={loading}>
       <Layout>
@@ -139,7 +179,7 @@ export default function AddTransactionForm() {
             name="Amount"
             rules={[{ required: true, message: 'Please input!' }]}
           >
-            <InputNumber<number> prefix="$" />
+            <InputNumber<number> prefix="$" precision={2} />
           </Form.Item>
           {formType === FORM_TYPES.EXPENSE && (
             <Form.Item label="Claim ?" name="Claim">
@@ -152,17 +192,37 @@ export default function AddTransactionForm() {
               <Radio.Button value={PEOPLE.KEV}>{PEOPLE.KEV}</Radio.Button>
             </Radio.Group>
           </Form.Item>
-
-          <Form.Item style={{ gap: 4 }}>
-            <Button
-              type="primary"
-              disabled={!submittable}
-              onClick={handleSubmit}
-            >
-              Submit
-            </Button>
-            <Button htmlType="reset">Reset</Button>
-          </Form.Item>
+          {!record ? (
+            <Form.Item style={{ gap: 4 }}>
+              <Button
+                type="primary"
+                disabled={!submittable}
+                onClick={handleSubmit}
+              >
+                Submit
+              </Button>
+              <Button htmlType="reset">Reset</Button>
+            </Form.Item>
+          ) : (
+            <Form.Item style={{ gap: 4 }}>
+              <Button
+                onClick={() => {
+                  if (onCancel) onCancel()
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                disabled={!submittable}
+                onClick={() => {
+                  if (onSave) onSave(form.getFieldsValue())
+                }}
+              >
+                Save
+              </Button>
+            </Form.Item>
+          )}
         </Form>
       </Layout>
     </Loader>

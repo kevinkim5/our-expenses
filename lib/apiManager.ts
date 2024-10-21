@@ -6,7 +6,7 @@ const baseAPI = axios.create({
 })
 
 type SaveObj = {
-  [key: string]: string
+  [key: string]: string | number | bigint | boolean | undefined
 }
 
 export const deleteAPICall = async (url: string) => {
@@ -38,7 +38,7 @@ export const postAPICall = async (url: string, dataObj: SaveObj) => {
     const formData = new FormData()
     Object.keys(dataObj).forEach((key) => {
       const value = dataObj[key]
-      formData.append(key, value)
+      formData.append(key, value as string)
     })
     const res = await baseAPI.post(url, formData)
     return res.data
