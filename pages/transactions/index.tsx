@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react'
-import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+import {
+  DeleteOutlined,
+  EditOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons'
 import type { TableColumnsType } from 'antd'
+import { isEqual, omit } from 'lodash'
 import {
   Button,
   DatePicker,
   message,
+  Modal,
   Popconfirm,
   Row,
   Statistic,
   Table,
   Typography,
 } from 'antd'
+import { Dayjs } from 'dayjs'
 
 import Loader from '@/components/Loader'
-import { deleteAPICall, getAPICall } from '@/lib/apiManager'
+import { deleteAPICall, getAPICall, postAPICall } from '@/lib/apiManager'
 import { convertDateStrToDayjs } from '@/utils/helpers'
+import AddTransactionForm from '../add'
+import { DAYJS_TO_STR_Z_FORMAT } from '@/constants/common'
 
 const { RangePicker } = DatePicker
 
@@ -28,8 +37,16 @@ interface DataType {
   Settle: boolean
 }
 
+interface ObjectToSend {
+  [key: string]: string | number | bigint | boolean | undefined
+}
+
 export default function TransactionsPage() {
   const [dateLastSettled, setDateLastSettled] = useState<string>('')
+  const [editingRecord, setEditingRecord] = useState<DataType | undefined>(
+    undefined
+  )
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false)
   const [loading, setLoading] = useState<boolean>(true)
   const [outstanding, setOutstanding] = useState(0)
   const [transactions, setTransactions] = useState([])
@@ -57,15 +74,57 @@ export default function TransactionsPage() {
       message.success({ content: 'Deleted successfully!' })
       fetchData()
     } catch (err) {
-      console.error(err)
-      setLoading(false)
-      message.error({ content: 'Failed to delete, please try again!' })
+      console.log('error: ', err)
     }
   }
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  const onEdit = (record: DataType) => {
+    setEditingRecord(record)
+    setIsEditModalOpen(true)
+  }
+
+  const onEditCancel = () => {
+    setIsEditModalOpen(false)
+    setEditingRecord(undefined)
+  }
+
+  const onEditSave = async (
+    editedRecord: Partial<DataType> & { Date: Dayjs }
+  ) => {
+    const editedDate = editedRecord?.Date?.format(DAYJS_TO_STR_Z_FORMAT) || ''
+    const recToUpdate: ObjectToSend = omit(
+      { ...editingRecord, ...editedRecord, Date: editedDate },
+      'PaidBy'
+    )
+    setIsEditModalOpen(false)
+
+    if (isEqual(recToUpdate, editingRecord)) {
+      message.warning({ content: 'Nothing was changed, nothing to save!' })
+    } else if (editingRecord) {
+      setLoading(true)
+      const differences = Object.keys(recToUpdate).filter(
+        (key: string) =>
+          recToUpdate[key] !== editingRecord?.[key as keyof DataType]
+      )
+
+      if (recToUpdate._id) {
+        const objToSend: ObjectToSend = {}
+        differences.forEach(
+          (key: string) => (objToSend[key] = recToUpdate[key])
+        )
+        console.log(objToSend)
+
+        const res = await postAPICall(
+          `/update?id=${recToUpdate._id}`,
+          objToSend
+        )
+        message.success({ content: res.message })
+      } else {
+        message.error({ content: 'Failed to update, please try again!' })
+      }
+      fetchData()
+    }
+  }
 
   const getAmountDisplay = (amount: number) => {
     const commonProps = {
@@ -86,23 +145,25 @@ export default function TransactionsPage() {
       title: 'Date',
       dataIndex: 'Date',
       render: (v: string) => {
-        return convertDateStrToDayjs(v).format('DD MMM YYYY')
+        return convertDateStrToDayjs(v).format('DD MMM YY')
       },
       sorter: (a, b) =>
         convertDateStrToDayjs(a.Date).unix() -
         convertDateStrToDayjs(b.Date).unix(),
+      fixed: true,
     },
     {
       key: 'Description',
-      title: 'Description',
+      title: 'Desc',
       dataIndex: 'Description',
+      fixed: true,
     },
     {
       key: 'Amount',
       title: 'Amount',
       dataIndex: 'Amount',
-      width: 120,
       render: (v: number) => getAmountDisplay(v),
+      fixed: true,
     },
     {
       key: 'Claim',
@@ -123,14 +184,34 @@ export default function TransactionsPage() {
       key: 'Settle',
       title: 'Settle',
       dataIndex: 'Settle',
+      filters: [
+        {
+          text: 'Yes',
+          value: true,
+        },
+      ],
+      onFilter: (value, record) => record.Claim === value,
       render: (v: boolean) => {
         return v === true ? 'Yes' : ''
       },
     },
     {
+      title: 'Edit',
+      dataIndex: 'Edit-2',
+      render: (_: string, record: DataType) => {
+        return (
+          <Button
+            icon={<EditOutlined />}
+            onClick={() => onEdit(record)}
+            type="link"
+          />
+        )
+      },
+    },
+    {
       title: '',
       dataIndex: 'Delete',
-      render: (text: string, record: DataType) => {
+      render: (_: string, record: DataType) => {
         return (
           <Popconfirm
             title="Confirm Delete?"
@@ -147,8 +228,24 @@ export default function TransactionsPage() {
     },
   ]
 
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   return (
     <Loader loading={loading}>
+      <Modal
+        closable={false}
+        cancelButtonProps={{ style: { display: 'none' } }}
+        okButtonProps={{ style: { display: 'none' } }}
+        open={isEditModalOpen}
+      >
+        <AddTransactionForm
+          record={editingRecord}
+          onSave={onEditSave}
+          onCancel={onEditCancel}
+        />
+      </Modal>
       <Row style={{ gap: 8 }}>
         <Typography>Current Oustanding:</Typography>
         {getAmountDisplay(outstanding)}
@@ -161,8 +258,9 @@ export default function TransactionsPage() {
       <Table
         columns={cols}
         dataSource={transactions}
-        scroll={{ x: 500, y: '60vh' }}
         pagination={false}
+        scroll={{ x: 500, y: '60vh' }}
+        tableLayout="auto"
       />
     </Loader>
   )
