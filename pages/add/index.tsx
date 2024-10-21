@@ -11,7 +11,7 @@ import {
   RadioChangeEvent,
   Switch,
 } from 'antd'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 
 import Loader from '@/components/Loader'
 import { DAYJS_TO_STR_Z_FORMAT, FORM_TYPES, PEOPLE } from '@/constants/common'
@@ -39,7 +39,7 @@ interface Record {
 
 interface AddTransactionFormProps {
   onCancel?: () => void
-  onSave?: (record: Partial<Record>) => void
+  onSave?: (record: Partial<Record> & { Date: Dayjs }) => void
   record?: Record
 }
 

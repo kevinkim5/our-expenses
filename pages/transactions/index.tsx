@@ -5,7 +5,6 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons'
 import type { TableColumnsType } from 'antd'
-import { isEqual, omit } from 'lodash'
 import {
   Button,
   DatePicker,
@@ -18,12 +17,13 @@ import {
   Typography,
 } from 'antd'
 import { Dayjs } from 'dayjs'
+import { isEqual, omit } from 'lodash'
 
 import Loader from '@/components/Loader'
-import { deleteAPICall, getAPICall, postAPICall } from '@/lib/apiManager'
-import { convertDateStrToDayjs } from '@/utils/helpers'
-import AddTransactionForm from '../add'
 import { DAYJS_TO_STR_Z_FORMAT } from '@/constants/common'
+import { deleteAPICall, getAPICall, postAPICall } from '@/lib/apiManager'
+import AddTransactionForm from '@/pages/add'
+import { convertDateStrToDayjs } from '@/utils/helpers'
 
 const { RangePicker } = DatePicker
 
