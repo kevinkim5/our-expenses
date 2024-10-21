@@ -59,7 +59,7 @@ export default function TransactionsPage() {
       setTransactions(data)
       const unsettledAmt = data.reduce((acc: number, obj: DataType) => {
         if (obj.Settle && dateLastSettled === null) setDateLastSettled(obj.Date)
-        return (acc += parseFloat(obj.Amount))
+        return (acc += parseFloat(obj.Amount) || 0)
       }, 0)
       console.log(unsettledAmt)
       setOutstanding(unsettledAmt)
