@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import clientPromise from '@/lib/mongoDB'
 import { BOOLEAN_KEYS } from '@/constants/common'
+import clientPromise from '@/lib/mongoDB'
 
 interface SaveObj {
   [key: string]: Date | boolean | number | string | null

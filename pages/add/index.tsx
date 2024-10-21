@@ -38,8 +38,8 @@ interface Record {
 }
 
 interface AddTransactionFormProps {
-  onCancel?: Function
-  onSave?: Function
+  onCancel?: () => void
+  onSave?: (record: Partial<Record>) => void
   record?: Record
 }
 
