@@ -150,20 +150,20 @@ export default function TransactionsPage() {
       sorter: (a, b) =>
         convertDateStrToDayjs(a.Date).unix() -
         convertDateStrToDayjs(b.Date).unix(),
-      fixed: true,
+      // fixed: true,
     },
     {
       key: 'Description',
       title: 'Desc',
       dataIndex: 'Description',
-      fixed: true,
+      // fixed: true,
     },
     {
       key: 'Amount',
       title: 'Amount',
       dataIndex: 'Amount',
       render: (v: number) => getAmountDisplay(v),
-      fixed: true,
+      // fixed: true,
     },
     {
       key: 'Claim',
