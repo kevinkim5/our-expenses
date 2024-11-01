@@ -97,9 +97,11 @@ export default function AddTransactionForm(props: AddTransactionFormProps) {
     }
 
     setLoading(false)
+    resetForm()
   }
 
-  useEffect(() => {
+  const resetForm = () => {
+    form.resetFields()
     form.setFieldValue('Date', dayjs())
     form.setFieldValue(
       'PaidBy',
@@ -109,6 +111,10 @@ export default function AddTransactionForm(props: AddTransactionFormProps) {
       form.setFieldValue('Description', 'Settle')
     }
     form.setFieldValue('Claim', false)
+  }
+
+  useEffect(() => {
+    resetForm()
   }, [formType])
 
   useEffect(() => {
