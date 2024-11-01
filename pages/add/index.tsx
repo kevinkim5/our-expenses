@@ -9,6 +9,7 @@ import {
   message,
   Radio,
   RadioChangeEvent,
+  Space,
   Switch,
 } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
@@ -97,9 +98,11 @@ export default function AddTransactionForm(props: AddTransactionFormProps) {
     }
 
     setLoading(false)
+    resetForm()
   }
 
-  useEffect(() => {
+  const resetForm = () => {
+    form.resetFields()
     form.setFieldValue('Date', dayjs())
     form.setFieldValue(
       'PaidBy',
@@ -109,6 +112,10 @@ export default function AddTransactionForm(props: AddTransactionFormProps) {
       form.setFieldValue('Description', 'Settle')
     }
     form.setFieldValue('Claim', false)
+  }
+
+  useEffect(() => {
+    resetForm()
   }, [formType])
 
   useEffect(() => {
@@ -146,6 +153,7 @@ export default function AddTransactionForm(props: AddTransactionFormProps) {
           buttonStyle="solid"
           onChange={handleRadioChange}
           value={formType}
+          style={{ marginBottom: 16 }}
         >
           <Radio.Button value={FORM_TYPES.EXPENSE}>Expense</Radio.Button>
           <Radio.Button value={FORM_TYPES.SETTLE}>Settle Up</Radio.Button>
@@ -193,34 +201,38 @@ export default function AddTransactionForm(props: AddTransactionFormProps) {
             </Radio.Group>
           </Form.Item>
           {!record ? (
-            <Form.Item style={{ gap: 4 }}>
-              <Button
-                type="primary"
-                disabled={!submittable}
-                onClick={handleSubmit}
-              >
-                Submit
-              </Button>
-              <Button htmlType="reset">Reset</Button>
+            <Form.Item wrapperCol={{ span: 12 }}>
+              <Space>
+                <Button
+                  type="primary"
+                  disabled={!submittable}
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+                <Button htmlType="reset">Reset</Button>
+              </Space>
             </Form.Item>
           ) : (
-            <Form.Item style={{ gap: 4 }}>
-              <Button
-                onClick={() => {
-                  if (onCancel) onCancel()
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="primary"
-                disabled={!submittable}
-                onClick={() => {
-                  if (onSave) onSave(form.getFieldsValue())
-                }}
-              >
-                Save
-              </Button>
+            <Form.Item wrapperCol={{ span: 12 }}>
+              <Space>
+                <Button
+                  onClick={() => {
+                    if (onCancel) onCancel()
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="primary"
+                  disabled={!submittable}
+                  onClick={() => {
+                    if (onSave) onSave(form.getFieldsValue())
+                  }}
+                >
+                  Save
+                </Button>
+              </Space>
             </Form.Item>
           )}
         </Form>

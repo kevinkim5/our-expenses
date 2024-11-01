@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { BOOLEAN_KEYS } from '@/constants/common'
+import { FIELD_TYPE_MAP } from '@/app/api/constants'
 import clientPromise from '@/lib/mongoDB'
 
 interface SaveObj {
-  [key: string]: Date | boolean | number | string | null
+  [key: string]: FormDataEntryValue | Date | number | null
 }
 
 export async function POST(req: NextRequest) {
@@ -14,20 +14,28 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData()
 
-    const fields = ['Date', 'Description', 'Amount']
     const saveObj: SaveObj = {}
-    fields.forEach((field) => {
-      saveObj[field] = (formData.get(field) as string) || null
+    Object.keys(FIELD_TYPE_MAP).forEach((field) => {
+      const type = FIELD_TYPE_MAP[field]
+      switch (type) {
+        case 'boolean':
+          saveObj[field] = JSON.parse(formData.get(field) as string) || null
+          break
+        case 'date':
+          saveObj[field] = new Date(formData.get(field) as string)
+          break
+        case 'number':
+          saveObj[field] = parseFloat(formData.get(field) as string)
+          break
+        default:
+          saveObj[field] = formData.get(field) || null
+          break
+      }
     })
 
-    BOOLEAN_KEYS.forEach((field) => {
-      if (formData.has(field) && formData.get(field) != undefined)
-        saveObj[field] = JSON.parse(formData.get(field) as string) || null
-    })
     console.log('saveObj', saveObj)
     const addTransaction = await db.collection('transactions').insertOne({
       ...saveObj,
-      Date: new Date(saveObj['Date'] as string),
     })
     console.log(addTransaction)
 
