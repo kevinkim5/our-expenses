@@ -12,6 +12,7 @@ import {
   Modal,
   Popconfirm,
   Row,
+  Space,
   Statistic,
   Table,
   Typography,
@@ -54,14 +55,19 @@ export default function TransactionsPage() {
   const fetchData = async () => {
     const res = await getAPICall('transactions')
     const { data } = res
-    console.log(data)
+
     if (data && data.length) {
+      let lastSettled: string | undefined = undefined
       setTransactions(data)
       const unsettledAmt = data.reduce((acc: number, obj: DataType) => {
-        if (obj.Settle && dateLastSettled === null) setDateLastSettled(obj.Date)
+        if (obj.Settle && !lastSettled) lastSettled = obj.Date
         return (acc += parseFloat(obj.Amount) || 0)
       }, 0)
-      console.log(unsettledAmt)
+
+      if (lastSettled)
+        setDateLastSettled(
+          convertDateStrToDayjs(lastSettled).format('DD MMM YY')
+        )
       setOutstanding(unsettledAmt)
     }
     setLoading(false)
@@ -150,20 +156,19 @@ export default function TransactionsPage() {
       sorter: (a, b) =>
         convertDateStrToDayjs(a.Date).unix() -
         convertDateStrToDayjs(b.Date).unix(),
-      // fixed: true,
+      minWidth: 110,
     },
     {
       key: 'Description',
       title: 'Desc',
       dataIndex: 'Description',
-      // fixed: true,
     },
     {
       key: 'Amount',
       title: 'Amount',
       dataIndex: 'Amount',
       render: (v: number) => getAmountDisplay(v),
-      // fixed: true,
+      minWidth: 120,
     },
     {
       key: 'Claim',
@@ -179,6 +184,7 @@ export default function TransactionsPage() {
         },
       ],
       onFilter: (value, record) => record.Claim === value,
+      minWidth: 90,
     },
     {
       key: 'Settle',
@@ -194,10 +200,10 @@ export default function TransactionsPage() {
       render: (v: boolean) => {
         return v === true ? 'Yes' : ''
       },
+      minWidth: 90,
     },
     {
-      title: 'Edit',
-      dataIndex: 'Edit-2',
+      dataIndex: 'Edit',
       render: (_: string, record: DataType) => {
         return (
           <Button
@@ -246,19 +252,22 @@ export default function TransactionsPage() {
           onCancel={onEditCancel}
         />
       </Modal>
-      <Row style={{ gap: 8 }}>
-        <Typography>Current Oustanding:</Typography>
-        {getAmountDisplay(outstanding)}
-      </Row>
-      <Row style={{ gap: 8 }}>
-        <Typography>Date Last Settled:</Typography>
-        {dateLastSettled}
-      </Row>
-      <RangePicker format="YYYY-MM-DD" />
+      <Space direction="vertical" style={{ marginBottom: 16 }}>
+        <Row style={{ gap: 8 }}>
+          <Typography>Current Oustanding:</Typography>
+          {getAmountDisplay(outstanding)}
+        </Row>
+        <Row style={{ gap: 8 }}>
+          <Typography>Date Last Settled:</Typography>
+          {dateLastSettled}
+        </Row>
+        <RangePicker format="YYYY-MM-DD" />
+      </Space>
       <Table
         columns={cols}
         dataSource={transactions}
         pagination={false}
+        size="small"
         scroll={{ x: 500, y: '60vh' }}
         tableLayout="auto"
       />
