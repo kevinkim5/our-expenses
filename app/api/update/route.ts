@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ObjectId } from 'mongodb'
 
-import { BOOLEAN_KEYS } from '@/constants/common'
+import { FIELD_TYPE_MAP } from '@/app/api/constants'
 import clientPromise from '@/lib/mongoDB'
 
 interface SaveObj {
-  [key: string]: Date | boolean | number | string | null
+  [key: string]: FormDataEntryValue | Date | number | null
 }
 
 export async function POST(req: NextRequest) {
@@ -20,12 +20,20 @@ export async function POST(req: NextRequest) {
     const saveObj: SaveObj = {}
 
     for (const key of formData.keys()) {
-      if (BOOLEAN_KEYS.includes(key)) {
-        saveObj[key] = JSON.parse(formData.get(key) as string) || null
-      } else if (key === 'Date') {
-        saveObj[key] = new Date(formData.get(key) as string)
-      } else {
-        saveObj[key] = (formData.get(key) as string) || null
+      const type = FIELD_TYPE_MAP[key]
+      switch (type) {
+        case 'boolean':
+          saveObj[key] = JSON.parse(formData.get(key) as string) || null
+          break
+        case 'date':
+          saveObj[key] = new Date(formData.get(key) as string)
+          break
+        case 'number':
+          saveObj[key] = parseFloat(formData.get(key) as string)
+          break
+        default:
+          saveObj[key] = formData.get(key) || null
+          break
       }
     }
     console.log(saveObj)
